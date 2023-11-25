@@ -3,7 +3,7 @@ import { fileURLToPath, URL } from 'node:url';
 import vue from '@vitejs/plugin-vue';
 import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
-import toPages from './page.config';
+import toPages from './page.plugin';
 
 
 

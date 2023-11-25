@@ -3,13 +3,13 @@ import { fileURLToPath, URL } from 'node:url';
 import vue from '@vitejs/plugin-vue';
 import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
-import { getInput } from './page.plugin';
+import toPages from './page.plugin';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
-    // toPages()
+    toPages()
   ],
   base: './',
   root: 'src',
@@ -22,7 +22,7 @@ export default defineConfig({
   build: {
     cssCodeSplit: true,
     rollupOptions: {
-      input: getInput(),
+      // input: getInput(),
     },
     emptyOutDir: true,
     outDir: resolve(__dirname, 'dist'),

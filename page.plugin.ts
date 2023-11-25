@@ -1,13 +1,39 @@
-import { globSync } from 'glob';
+import fs from 'node:fs';
 import { resolve } from 'node:path';
+import { promisify } from 'node:util';
 import { Plugin } from 'vite';
 
+
+const readdir = promisify(fs.readdir)
+const stat = promisify(fs.stat)
+const getFile = async () => {
+  let fileList: string[] = []
+  const dirs = await readdir('./src')
+  const fileDir = dirs.map(async (f) => {
+    const dir = `./src/${f}`
+    const isDir = await stat(dir)
+    if (isDir.isDirectory()) {
+      const file = await readdir(dir)
+      await Promise.all(
+        file.map(async (name) => {
+          if ((await stat(`${dir}/${name}`)).isFile() && name === 'index.html') {
+            fileList.push(`${dir}/${name}`);
+          }
+        })
+      )
+    }
+  })
+  await Promise.all(fileDir)
+  return fileList
+}
+
 // 多入口html文件
-export default (): Plugin => {
-  const files = globSync('./src/**/index.html');
+export default async (): Promise<Plugin> => {
+  const files = await getFile()
+
   const input: Record<string, string> = {}
   for (const inputpath of files) {
-    const name = inputpath.split('\\').at(-2)
+    const name = inputpath.split(/\\|\//).at(-2)
     if (name && name !== 'src') {
       input[name] = resolve(__dirname, inputpath)
     }
@@ -29,7 +55,6 @@ export default (): Plugin => {
       }
       //@ts-ignore
       config.build.rollupOptions.input = input
-      console.log('[ input ]-36', input)
       //@ts-ignore
       config.build.rollupOptions.output = {
         assetFileNames: '[ext]/[name]-[hash].[ext]', //静态文件输出的文件夹名称
@@ -38,22 +63,4 @@ export default (): Plugin => {
       }
     },
   }
-
-}
-
-export const getInput = () => {
-
-  const files = globSync('./src/**/index.html');
-  const input: Record<string, string> = {}
-  for (const inputpath of files) {
-    const name = inputpath.split('\\').at(-2)
-    if (name && name !== 'src') {
-      input[name] = resolve(__dirname, inputpath)
-    }
-  }
-
-  input.index = resolve(__dirname, 'src/index.html')
-  console.log('[ input ]-60', input)
-
-  return input
 }

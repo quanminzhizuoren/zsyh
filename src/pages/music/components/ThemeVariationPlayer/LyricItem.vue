@@ -1,6 +1,6 @@
 <template>
   <div class="lyriclist" ref="lyriclistRef">
-    <div class="lyriclist-container">
+    <div class="lyriclist-container" :style="activ ? {} : { overflowX: 'hidden' }">
       <span v-for="(item, index) in list" class="lyricitem" ref="lyricitemRef"
         ><span
           class="lyricitem-content"
@@ -85,14 +85,6 @@ watch(
         intransition.start()
       }
     }
-  }
-)
-
-// 不处于歌词滚动时 设置原来初始的横向滚动位置0
-watch(
-  () => props.activ,
-  () => {
-    if (lyriclistRef.value) lyriclistRef.value.scrollLeft = 0
   }
 )
 

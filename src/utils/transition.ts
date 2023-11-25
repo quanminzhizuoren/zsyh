@@ -1,4 +1,20 @@
 
+
+type Callback = (t: number, f: number) => void
+type Return = {
+  /**
+   * 动画开始 
+   * @param time 本次动画持续时间
+   */
+  start(time?: number): void;
+  /**停止 */
+  stop(): void;
+}
+
+export function transitionNumber(form: number, to: number, callback: Callback,): Return;
+export function transitionNumber(form: number, to: number, callback: Callback, time: number): Return;
+export function transitionNumber(form: number, to: number, callback: Callback,/*结束回调*/ over: Function): Return;
+export function transitionNumber(form: number, to: number, callback: Callback,/*结束回调*/ over: Function, time: number): Return;
 /**
  * 数字过渡动画
  * @param {number} form 初始值
@@ -10,21 +26,16 @@
  *  - start() 开始动画
  *  - stop() 停止动画
  */
-export const transitionNumber = (
-  /**初始值 */
+export function transitionNumber(
   form: number,
-  /**结束值 */
   to: number,
-  /**回调 */
-  callback: (t: number, f: number) => void,
-  /**结束回调或持续时间 */
-  over: number | (() => void) = 300,
-  /**持续时间 */
+  callback: Callback,
+  over: number | Function = 300,
   time: number = 300
-) => {
+) {
   const startTime = performance.now();
   let iscontinue = true
-  let ms = typeof over === 'number' ? over : time;
+  let ms = typeof over === 'number' ? over : time
   function step(reqtime: number) {
     if (!iscontinue) return
     const progress = (reqtime - startTime) / ms;
@@ -37,15 +48,10 @@ export const transitionNumber = (
   }
 
   return {
-    /**
-     * 动画开始开始 
-     * @param time 本次动画持续时间
-     */
     start(time?: number) {
       if (time) ms = time
       requestAnimationFrame(step);
     },
-    /**停止 */
     stop() {
       iscontinue = false
     }

@@ -43,7 +43,6 @@ const lyricClick = () => {
   &-header {
     width: 100%;
     height: var(--header-height, 48px);
-    background: #000;
   }
   &-cover {
     width: 100%;
@@ -112,8 +111,8 @@ const lyricClick = () => {
   // 展开歌词
   .lyric-unfold {
     width: 100%;
-    height: calc(100% - var(--header-height));
-    top: var(--header-height);
+    height: 100%;
+    top: 0;
     background-color: #00000056;
     backdrop-filter: blur(60px);
   }

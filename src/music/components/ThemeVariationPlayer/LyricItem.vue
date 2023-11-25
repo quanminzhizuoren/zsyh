@@ -158,10 +158,10 @@ onMounted(setData)
   }
 }
 @keyframes lyricactiv {
-  form {
+  0% {
     width: 0%;
   }
-  to {
+  100% {
     width: 100%;
   }
 }

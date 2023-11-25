@@ -40,3 +40,20 @@ export default (): Plugin => {
   }
 
 }
+
+export const getInput = () => {
+
+  const files = globSync('./src/**/index.html');
+  const input: Record<string, string> = {}
+  for (const inputpath of files) {
+    const name = inputpath.split('\\').at(-2)
+    if (name && name !== 'src') {
+      input[name] = resolve(__dirname, inputpath)
+    }
+  }
+
+  input.index = resolve(__dirname, 'src/index.html')
+  console.log('[ input ]-60', input)
+
+  return input
+}

@@ -7,17 +7,21 @@ import { Plugin } from 'vite';
 const readdir = promisify(fs.readdir)
 const stat = promisify(fs.stat)
 const getFile = async () => {
+  const src = resolve(__dirname, 'src')
+  console.log('[ src ]-11', src)
   let fileList: string[] = []
-  const dirs = await readdir('./src')
+  const dirs = await readdir(src)
+  console.log('[ dirs ]-14', dirs)
   const fileDir = dirs.map(async (f) => {
-    const dir = `./src/${f}`
+    const dir = resolve(__dirname, 'src', f)
     const isDir = await stat(dir)
     if (isDir.isDirectory()) {
       const file = await readdir(dir)
       await Promise.all(
         file.map(async (name) => {
-          if ((await stat(`${dir}/${name}`)).isFile() && name === 'index.html') {
-            fileList.push(`${dir}/${name}`);
+          const filename = resolve(__dirname, dir, name)
+          if ((await stat(filename)).isFile() && name === 'index.html') {
+            fileList.push(filename);
           }
         })
       )

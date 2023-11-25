@@ -24,9 +24,9 @@
 </template>
 
 <script setup lang="ts">
+import type { LyricContent, LyricItemContent } from '@/types/Krc'
+import { transitionNumber } from '@/utils/transition'
 import { onMounted, ref, watch } from 'vue'
-import type { LyricContent, LyricItemContent } from '../../types/Krc'
-import { transitionNumber } from '../../utils/transition'
 
 const props = defineProps<{
   data: LyricContent
@@ -113,6 +113,10 @@ onMounted(setData)
   justify-content: center;
   flex: 1 1 auto;
   flex-wrap: nowrap;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
   &-container {
     min-width: 100%;
     // display: flex;

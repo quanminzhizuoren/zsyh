@@ -22,8 +22,8 @@
 </template>
 
 <script setup lang="ts">
+import { useAudioStore } from '@/stores/audio'
 import { ref } from 'vue'
-import { useAudioStore } from '../../stores/audio'
 import Lyric from './Lyric.vue'
 const store = useAudioStore()
 

@@ -23,10 +23,11 @@
 </template>
 
 <script setup lang="ts">
+import { useAudioStore } from '@/stores/audio'
+import type { LyricContent } from '@/types/Krc'
+import { transitionNumber } from '@/utils/transition'
 import { onMounted, ref, watch } from 'vue'
-import { useAudioStore } from '../../stores/audio'
-import type { LyricContent } from '../../types/Krc'
-import { transitionNumber } from '../../utils/transition'
+
 import LyricItem from './LyricItem.vue'
 const props = defineProps<{ unfold: boolean }>()
 const store = useAudioStore()
@@ -103,6 +104,12 @@ const toPlay = (index: number) => {
   width: 100%;
   height: 100%;
   overflow-y: auto;
+
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
   &-list {
     list-style: none;
     padding: 0;

@@ -1,13 +1,14 @@
 <template>
   <div class="player_container">
     <ThemeVariationPlayer />
+    <Kaudio />
   </div>
 </template>
 
 <script setup lang="ts">
-import ThemeVariationPlayer from '../components/ThemeVariationPlayer/ThemeVariationPlayer.vue'
-import { useAudioStore } from '../stores/audio'
-
+import { useAudioStore } from '../../stores/audio'
+import Kaudio from './components/Kaudio.vue'
+import ThemeVariationPlayer from './components/ThemeVariationPlayer/ThemeVariationPlayer.vue'
 const store = useAudioStore()
 // 歌曲链接
 store.url = '/mp3/Do You Believe.mp3'

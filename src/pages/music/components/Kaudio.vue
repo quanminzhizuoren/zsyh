@@ -3,8 +3,8 @@
 </template>
 
 <script setup lang="ts">
+import { useAudioStore } from '@/stores/audio'
 import { onMounted, ref } from 'vue'
-import { useAudioStore } from '../stores/audio'
 
 const store = useAudioStore()
 

@@ -1,7 +1,7 @@
 
+import type { Lyric } from '@/types/Krc'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import type { Lyric } from '../types/Krc'
 export const useAudioStore = defineStore('audio', () => {
   const audio = ref<HTMLAudioElement>()
 

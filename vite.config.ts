@@ -5,8 +5,6 @@ import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
 import toPages from './page.plugin';
 
-
-
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [

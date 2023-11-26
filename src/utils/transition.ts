@@ -1,6 +1,6 @@
 
 
-type Callback = (t: number, f: number) => void
+type Callback = (t: number, f: number, option: Return) => void
 type Return = {
   /**
    * 动画开始 
@@ -33,21 +33,12 @@ export function transitionNumber(
   over: number | Function = 300,
   time: number = 300
 ) {
+
   const startTime = performance.now();
   let iscontinue = true
   let ms = typeof over === 'number' ? over : time
-  function step(reqtime: number) {
-    if (!iscontinue) return
-    const progress = (reqtime - startTime) / ms;
-    if (progress >= 1) {
-      typeof over === 'function' && over()
-      return
-    }
-    callback(form * (1 - progress) + to * progress, form)
-    requestAnimationFrame(step);
-  }
 
-  return {
+  const option = {
     start(time?: number) {
       if (time) ms = time
       requestAnimationFrame(step);
@@ -56,4 +47,15 @@ export function transitionNumber(
       iscontinue = false
     }
   }
+  function step(reqtime: number) {
+    if (!iscontinue) return
+    const progress = (reqtime - startTime) / ms;
+    if (progress >= 1) {
+      typeof over === 'function' && over()
+      return
+    }
+    callback(form * (1 - progress) + to * progress, form, option)
+    requestAnimationFrame(step);
+  }
+  return option
 }

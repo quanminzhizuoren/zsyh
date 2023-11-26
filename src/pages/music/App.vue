@@ -1,6 +1,7 @@
 <template>
   <div class="player_container">
     <ThemeVariationPlayer />
+    <PlayControl />
     <Kaudio />
   </div>
 </template>
@@ -8,6 +9,7 @@
 <script setup lang="ts">
 import { useAudioStore } from '../../stores/audio'
 import Kaudio from './components/Kaudio.vue'
+import PlayControl from './components/PlayControl/PlayControl.vue'
 import ThemeVariationPlayer from './components/ThemeVariationPlayer/ThemeVariationPlayer.vue'
 const store = useAudioStore()
 // 歌曲链接
@@ -26,5 +28,11 @@ fetch('/json/krc.json')
   height: 100vh;
   --header-height: 48px;
   --lyric-height: 100px;
+  --play-height: min(40vh, 300px);
+  position: relative;
+}
+.paly {
+  width: 100%;
+  height: 40vh;
 }
 </style>

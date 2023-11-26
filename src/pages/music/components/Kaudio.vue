@@ -19,13 +19,7 @@ onMounted(() => {
     store.currentTime = audio.currentTime
     store.duration = audio.duration
   })
-  document.addEventListener('click', () => {
-    if (audio.paused) {
-      audio.play()
-    } else {
-      audio.pause()
-    }
-  })
+
   audio.addEventListener('play', () => {
     store.isPause = false
     store.isPlay = true

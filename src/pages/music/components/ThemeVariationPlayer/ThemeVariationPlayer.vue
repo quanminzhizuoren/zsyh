@@ -1,9 +1,5 @@
 <template>
-  <div
-    class="tvp"
-    :class="{ 'lyric-blur': isLyricStyle }"
-    :style="[isLyricStyle ? { backgroundImage: `url(${store.coverUri})` } : {}]"
-  >
+  <div class="tvp" :class="{ 'lyric-blur': isLyricStyle }">
     <!-- 头部 -->
     <div class="tvp-header"></div>
     <div class="tvp-exhibition">

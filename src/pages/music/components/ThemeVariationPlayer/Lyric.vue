@@ -78,12 +78,11 @@ const onscroll = () => {
   if (itemIndex.value === endList.length - 1) return
   itemIndex.value = endList.length - 1
   if (isScolling) return
+  activIndex.value = -1
   const itemEl = LyricItemRef.value[itemIndex.value]
   if (LyricListRef.value && itemEl) {
     const h = LyricListRef.value?.clientHeight / 2 - itemEl.clientHeight / 2
     const st = LyricListRef.value.scrollTop
-    activIndex.value = -1
-
     transitionNumber(
       st,
       itemEl.offsetTop - (props.unfold ? h : itemEl.clientHeight / 2),
@@ -99,7 +98,6 @@ const onscroll = () => {
 watch(
   () => props.unfold,
   () => {
-    activIndex.value = -1
     onscroll()
   }
 )
@@ -142,7 +140,7 @@ const setScolling = (value: boolean) => {
     setTimeout(() => {
       isScolling = false
       onscroll()
-    }, 1800)
+    }, 2000)
   } else {
     isScolling = value
   }
@@ -168,7 +166,6 @@ const toPlay = () => {
     if (store.audio) {
       store.audio.currentTime = progress.value
       isScolling = false
-      activIndex.value = -1
       onscroll()
     }
   }
@@ -223,7 +220,6 @@ const scroll = (() => {
       overflow-x: auto;
       transition: font-size 200ms;
       opacity: 0.5;
-      pointer-events: none;
     }
     .lyric-itemactiv {
       font-size: 1.7em;
@@ -240,7 +236,7 @@ const scroll = (() => {
   padding: 0.5em 0.7em;
   border-radius: 0.5em;
   top: 30%;
-  right: 1em;
+  right: 3px;
   transform: translateY(-50%);
   position: absolute;
   background-color: #fff;

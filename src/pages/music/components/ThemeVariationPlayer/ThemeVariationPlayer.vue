@@ -1,5 +1,9 @@
 <template>
-  <div class="tvp" :class="{ 'lyric-blur': isLyricStyle }">
+  <div
+    class="tvp"
+    :class="{ 'lyric-blur': isLyricStyle }"
+    :style="[isLyricStyle ? { backgroundImage: `url(${store.coverUri})` } : {}]"
+  >
     <!-- 头部 -->
     <div class="tvp-header"></div>
     <div class="tvp-exhibition">
@@ -72,8 +76,7 @@ const scroll = () => {
     position: absolute;
     top: 0;
     &-container {
-      height: 60%;
-      min-height: 200px;
+      height: min(70%, 300px);
       aspect-ratio: 6 / 6.7;
       background-color: #fff;
       margin: 0 auto;

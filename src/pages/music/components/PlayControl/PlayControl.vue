@@ -45,12 +45,10 @@ const props = defineProps<{
   title?: string
 }>()
 const store = useAudioStore()
-console.log('[ store ]-16', store)
 
 const pause = computed(() => store.isPause)
 const click = () => {
   store.audio?.paused ? store.audio?.play() : store.audio?.pause()
-  console.log('[ store.audio?.paused ]-51', store.audio?.paused)
 }
 </script>
 

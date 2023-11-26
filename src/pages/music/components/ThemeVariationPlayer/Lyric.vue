@@ -16,7 +16,7 @@
         v-for="(item, index) in list"
         :class="{
           'lyric-itemactiv': index === itemIndex,
-          'lyric-itembg': activIndex === index
+          'lyric-itembg': unfold && activIndex === index
         }"
         ref="LyricItemRef"
       >
@@ -152,7 +152,14 @@ onMounted(() => {
   nextTick(() => {
     const resizeObserver = new ResizeObserver((entries) => {
       bodyh.value = entries[0].contentRect.height / 2
-      onscroll()
+      nextTick(() => {
+        const itemEl = LyricItemRef.value[itemIndex.value]
+        if (LyricListRef.value && itemEl) {
+          const h = LyricListRef.value?.clientHeight / 2 - itemEl.clientHeight / 2
+          LyricListRef.value.scrollTop = itemEl.offsetTop - h
+          activIndex.value = -1
+        }
+      })
     })
     LyricListRef.value && resizeObserver.observe(LyricListRef.value)
   })

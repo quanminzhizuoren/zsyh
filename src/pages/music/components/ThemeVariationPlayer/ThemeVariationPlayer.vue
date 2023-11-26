@@ -72,7 +72,7 @@ const scroll = () => {
     position: absolute;
     top: 0;
     &-container {
-      height: min(70%, 300px);
+      width: min(60vw, 400px);
       aspect-ratio: 6 / 6.7;
       background-color: #fff;
       margin: 0 auto;

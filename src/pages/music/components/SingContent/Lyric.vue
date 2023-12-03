@@ -236,13 +236,14 @@ const scroll = (e: any) => {
     height: auto;
     li {
       width: 100%;
-      min-height: 2em;
-      line-height: 2.5em;
+      min-height: 1em;
+      line-height: 2em;
       box-sizing: border-box;
       padding: 0 10px;
       overflow-x: auto;
       transition: font-size 200ms;
       opacity: 0.5;
+      padding: 10px 0;
     }
     .lyric-itemactiv {
       font-size: 1.7em;
@@ -256,19 +257,20 @@ const scroll = (e: any) => {
 }
 .skip {
   font-size: 0.7em;
-  padding: 0.5em 0.7em;
+  padding: 0.3em 0.5em;
   border-radius: 0.5em;
-  top: 30%;
+  top: 50%;
   right: 3px;
   transform: translateY(-50%);
   position: absolute;
   background-color: #fff;
+  background-color: var(--lyric-color);
   display: flex;
   align-items: center;
   cursor: pointer;
   .icon {
-    width: 1.2em;
-    height: 1.2em;
+    width: 1em;
+    height: 1em;
     margin-right: 0.3em;
   }
 }

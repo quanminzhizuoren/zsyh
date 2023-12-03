@@ -114,23 +114,14 @@ onUnmounted(() => {
     height: 100px;
     position: absolute;
     bottom: 0px;
+    box-sizing: border-box;
+    padding: 0 20px;
   }
   &-play {
     width: 100%;
     height: 50vh;
     position: absolute;
     bottom: 0;
-  }
-
-  // 展开歌词
-  .lyric-unfold {
-    width: 100%;
-    height: 100%;
-    top: 0;
-    .tvp-lyric {
-      width: 100%;
-      height: 100%;
-    }
   }
 }
 
@@ -158,19 +149,6 @@ onUnmounted(() => {
   }
 }
 
-@media (max-width: 767px) {
-  .tvp.lyric-unfold {
-    .tvp-lyric {
-      width: 100%;
-      height: 100%;
-      top: 0;
-    }
-    .tvp-cover {
-      display: none;
-    }
-  }
-}
-
 @media (min-width: 992px) {
   .tvp {
     .lyric-blur();
@@ -178,9 +156,12 @@ onUnmounted(() => {
       height: calc(var(--header-height) * 2);
     }
     .tvp-lyric {
-      height: 100%;
       position: static;
-      width: 50%;
+      width: 40%;
+      min-width: 300px;
+      height: 70%;
+      min-height: 400px;
+      max-height: 600px;
     }
     .tvp-cover {
       width: 50%;
@@ -193,7 +174,9 @@ onUnmounted(() => {
         box-shadow: none;
         padding: 0;
         aspect-ratio: 1;
-
+        img {
+          border-radius: 10px;
+        }
         .cover_title {
           display: none;
         }
@@ -201,6 +184,7 @@ onUnmounted(() => {
     }
     .tvp-exhibition {
       display: flex;
+      align-items: center;
       width: 60vw;
       min-width: 992px;
       margin: 0 auto;

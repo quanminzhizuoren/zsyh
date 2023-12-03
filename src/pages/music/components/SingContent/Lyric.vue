@@ -4,7 +4,7 @@
     class="lyric"
     ref="LyricListRef"
     @wheel="onwheel"
-    @touchstart="setScolling(true)"
+    @touchmove="onwheel"
     @touchend="setScolling(false)"
     @scroll="scroll"
   >
@@ -47,7 +47,7 @@
         p-id="11919"
       ></path>
     </svg>
-    <span>{{ (progress / 60).toFixed(2).split('.').join(':') }}</span>
+    <span>{{ (progress / 60).toFixed(2).replace('.', ':') }}</span>
   </div>
 </template>
 
@@ -56,7 +56,6 @@ import { useAudioStore } from '@/stores/audio'
 import type { LyricContent } from '@/types/Krc'
 import { transitionNumber } from '@/utils/transition'
 import { nextTick, onMounted, ref, watch } from 'vue'
-
 import LyricItem from './LyricItem.vue'
 const props = defineProps<{ unfold: boolean }>()
 const store = useAudioStore()
@@ -74,10 +73,22 @@ const onscroll = () => {
   const item = LyricItemRef.value
   if (!item.length) return
   const progressTime = store.currentTime * 1000
-  const endList = list.value.filter((v) => v.start < progressTime)
+  const endList = list.value.filter((v, index, li) => {
+    if (index + 1 < li.length) {
+      const item = li[index + 1]
+      const num = item.start + item.duration - v.start
+      // 开始下一句前滚动到下一句歌词
+      return v.start - num * 0.1 < progressTime
+    }
+    return v.start < progressTime + (index + 1 < li.length ? 220 : 0)
+  })
   if (itemIndex.value === endList.length - 1) return
   itemIndex.value = endList.length - 1
   if (isScolling) return
+  ontransition()
+}
+
+const ontransition = () => {
   activIndex.value = -1
   const itemEl = LyricItemRef.value[itemIndex.value]
   if (LyricListRef.value && itemEl) {
@@ -95,12 +106,8 @@ const onscroll = () => {
     ).start()
   }
 }
-watch(
-  () => props.unfold,
-  () => {
-    onscroll()
-  }
-)
+
+watch(() => props.unfold, onscroll)
 
 //监听播放 滚动歌词
 watch(
@@ -123,24 +130,24 @@ onMounted(onscroll)
 
 // 是否手动滑动歌词列表
 let isScolling = false
+
+let t: number
 // 滚轮事件
-const onwheel = (() => {
-  let t: number
-  return (e: any) => {
-    setScolling(true)
-    t && clearTimeout(t)
-    t = setTimeout(() => {
-      clearTimeout(t)
-      setScolling(false)
-    }, 200)
-  }
-})()
+const onwheel = (e: TouchEvent | WheelEvent) => {
+  setScolling(true)
+  clearTimeout(t)
+  t = setTimeout(() => {
+    clearTimeout(t)
+    setScolling(false)
+  }, 1000)
+}
+
 const setScolling = (value: boolean) => {
   if (!value) {
     setTimeout(() => {
       isScolling = false
-      onscroll()
-    }, 2000)
+      ontransition()
+    }, 1000)
   } else {
     isScolling = value
   }
@@ -155,8 +162,11 @@ onMounted(() => {
       nextTick(() => {
         const itemEl = LyricItemRef.value[itemIndex.value]
         if (LyricListRef.value && itemEl) {
-          const h = LyricListRef.value?.clientHeight / 2 - itemEl.clientHeight / 2
+          const h = props.unfold
+            ? LyricListRef.value?.clientHeight / 2 - itemEl.clientHeight / 2
+            : 0
           LyricListRef.value.scrollTop = itemEl.offsetTop - h
+
           activIndex.value = -1
         }
       })
@@ -181,23 +191,14 @@ const toPlay = () => {
 // 所要跳转的进度
 const activIndex = ref(-1)
 // 滚动时获取对应位置歌词的时间进度
-const scroll = (() => {
-  let t: number
-  return (e: any) => {
-    if (!isScolling || !LyricListRef.value) return
-    const scrollTop = LyricListRef.value.scrollTop
-    const file = LyricItemRef.value.filter((el) => el.offsetTop - scrollTop <= bodyh.value)
-    activIndex.value = Math.max(file.length - 1, 0)
-    const item = list.value[activIndex.value]
-    if (item) progress.value = (item.start + 10) / 1000
-    // 滚动停止时延迟两秒关闭
-    t && clearTimeout(t)
-    t = setTimeout(() => {
-      clearTimeout(t)
-      onscroll()
-    }, 2000)
-  }
-})()
+const scroll = (e: any) => {
+  if (!isScolling || !LyricListRef.value) return
+  const scrollTop = LyricListRef.value.scrollTop
+  const file = LyricItemRef.value.filter((el) => el.offsetTop - scrollTop <= bodyh.value)
+  activIndex.value = Math.max(file.length - 1, 0)
+  const item = list.value[activIndex.value]
+  if (item) progress.value = (item.start + 10) / 1000
+}
 </script>
 
 <style lang="less" scoped>
@@ -221,7 +222,7 @@ const scroll = (() => {
     li {
       width: 100%;
       min-height: 2em;
-      line-height: 3em;
+      line-height: 2.5em;
       box-sizing: border-box;
       padding: 0 10px;
       overflow-x: auto;
@@ -234,7 +235,7 @@ const scroll = (() => {
     }
     .lyric-itembg {
       opacity: 1;
-      font-size: 1.1em;
+      font-size: 1.7em;
     }
   }
 }

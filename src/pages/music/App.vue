@@ -1,6 +1,6 @@
 <template>
   <div class="player_container">
-    <ThemeVariationPlayer />
+    <SingContent />
     <PlayControl />
     <Kaudio />
   </div>
@@ -10,7 +10,7 @@
 import { useAudioStore } from '../../stores/audio'
 import Kaudio from './components/Kaudio.vue'
 import PlayControl from './components/PlayControl/PlayControl.vue'
-import ThemeVariationPlayer from './components/ThemeVariationPlayer/ThemeVariationPlayer.vue'
+import SingContent from './components/SingContent/SingContent.vue'
 const store = useAudioStore()
 // 歌曲链接
 store.url = '/mp3/Do You Believe.mp3'
@@ -19,6 +19,7 @@ fetch('/json/krc.json')
   .then((res) => res.json())
   .then((res) => {
     store.krc = res
+    store.name = res.ar
   })
 </script>
 

@@ -111,8 +111,6 @@ onMounted(setData)
   }
   &-container {
     min-width: 100%;
-    // display: flex;
-    // justify-content: center;
     white-space: nowrap;
     text-align: center;
     align-items: flex-start;

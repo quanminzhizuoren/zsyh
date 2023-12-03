@@ -15,10 +15,16 @@ export function transitionNumber(form: number, to: number, callback: Callback,):
 export function transitionNumber(form: number, to: number, callback: Callback, time: number): Return;
 export function transitionNumber(form: number, to: number, callback: Callback,/*结束回调*/ over: Function): Return;
 export function transitionNumber(form: number, to: number, callback: Callback,/*结束回调*/ over: Function, time: number): Return;
+
+export function transitionNumber(form: number[], to: number[], callback: Callback,): Return;
+export function transitionNumber(form: number[], to: number[], callback: Callback, time: number): Return;
+export function transitionNumber(form: number[], to: number[], callback: Callback,/*结束回调*/ over: Function): Return;
+export function transitionNumber(form: number[], to: number[], callback: Callback,/*结束回调*/ over: Function, time: number): Return;
+
 /**
  * 数字过渡动画
- * @param {number} form 初始值
- * @param {number} to 结束值
+ * @param {number|number[]} form 初始值
+ * @param {number|number[]} to 结束值
  * @param {function} callback 回调函数，每次调用时会传入当前的 t 值和 form 值，传入的to到form的进度
  * @param {number|function} over 结束回调或持续时间，如果是数字，则表示动画的持续时间，单位为毫秒；如果是函数，则表示动画结束时的回调函数
  * @param {number} time 动画的持续时间，单位为毫秒
@@ -27,8 +33,8 @@ export function transitionNumber(form: number, to: number, callback: Callback,/*
  *  - stop() 停止动画
  */
 export function transitionNumber(
-  form: number,
-  to: number,
+  form: number | number[],
+  to: number | number[],
   callback: Callback,
   over: number | Function = 300,
   time: number = 300
@@ -54,7 +60,13 @@ export function transitionNumber(
       typeof over === 'function' && over()
       return
     }
-    callback(form * (1 - progress) + to * progress, form, option)
+    if (typeof form === 'number' && typeof to === 'number') {
+      callback(form * (1 - progress) + to * progress, form, option)
+    } else if (Array.isArray(form) && Array.isArray(to) && form.length === to.length) {
+      for (let index in form) {
+        callback(form[index] * (1 - progress) + to[index] * progress, form[index], option)
+      }
+    } else throw new TypeError('只能是数字')
     requestAnimationFrame(step);
   }
   return option

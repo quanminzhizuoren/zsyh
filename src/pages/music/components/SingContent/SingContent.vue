@@ -1,10 +1,10 @@
 <template>
-  <div class="tvp" :class="{ 'lyric-blur': isLyricStyle }">
+  <div class="tvp" :class="{ 'lyric-unfold': isLyricStyle }">
     <!-- 头部 -->
     <div class="tvp-header"></div>
     <div class="tvp-exhibition">
       <!-- 歌曲封面 -->
-      <div class="tvp-cover" v-show="!isLyricStyle">
+      <div class="tvp-cover">
         <div class="tvp-cover-container">
           <img :src="store.coverUri" alt="" />
           <div class="cover_title">
@@ -14,12 +14,7 @@
         </div>
       </div>
       <!-- 歌词滚动区域 -->
-      <div
-        class="tvp-lyric"
-        :class="{ 'lyric-unfold': isLyricStyle }"
-        @click.stop="lyricClick"
-        @scroll="scroll"
-      >
+      <div class="tvp-lyric" @click.stop="lyricClick" @scroll="scroll">
         <Lyric :unfold="isLyricStyle" :style="[isLyricStyle ? {} : { pointerEvents: 'none' }]" />
       </div>
     </div>
@@ -28,7 +23,7 @@
 
 <script setup lang="ts">
 import { useAudioStore } from '@/stores/audio'
-import { ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import Lyric from './Lyric.vue'
 const store = useAudioStore()
 
@@ -39,6 +34,17 @@ const lyricClick = () => {
 const scroll = () => {
   console.log(store.audio?.currentTime)
 }
+
+const setShw = () => {
+  isLyricStyle.value = document.body.clientWidth > 992
+}
+onMounted(() => {
+  window.addEventListener('resize', setShw)
+  setShw()
+})
+onUnmounted(() => {
+  window.removeEventListener('resize', setShw)
+})
 </script>
 
 <style lang="less" scoped>
@@ -56,9 +62,6 @@ const scroll = () => {
   &-exhibition {
     width: 100%;
     height: calc(100vh - var(--play-height) - var(--header-height, 48px));
-    // display: flex;
-    // flex-direction: column;
-    // align-content: center;
     position: relative;
   }
   &-cover {
@@ -81,17 +84,14 @@ const scroll = () => {
       box-shadow: 0 0 0 10px #fff, inset 0 0 10px #00000033;
       padding: 10px;
 
-      @media screen and(min-width: 800px) {
-        border-radius: 0;
-        box-shadow: none;
-      }
       img {
+        display: block;
         width: 100%;
         aspect-ratio: 1;
         border-radius: 30px;
-        @media screen and(min-width: 800px) {
-          border-radius: 0;
-        }
+        // @media screen and(min-width: 800px) {
+        //   border-radius: 0;
+        // }
       }
       .cover_title {
         margin-top: 3px;
@@ -127,15 +127,84 @@ const scroll = () => {
     width: 100%;
     height: 100%;
     top: 0;
+    .tvp-lyric {
+      width: 100%;
+      height: 100%;
+    }
   }
 }
-.lyric-blur::before {
-  width: 100%;
-  height: 100%;
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-color: #00000051;
-  backdrop-filter: blur(60px);
+
+.lyric-unfold {
+  .tvp-cover {
+    display: none;
+  }
+  .tvp-lyric {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+  }
+  .lyric-blur();
+}
+.lyric-blur() {
+  &::before {
+    width: 100%;
+    height: 100%;
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: #00000051;
+    backdrop-filter: blur(60px);
+  }
+}
+
+@media (max-width: 767px) {
+  .tvp.lyric-unfold {
+    .tvp-lyric {
+      width: 100%;
+      height: 100%;
+      top: 0;
+    }
+    .tvp-cover {
+      display: none;
+    }
+  }
+}
+
+@media (min-width: 992px) {
+  .tvp {
+    .lyric-blur();
+    .tvp-header {
+      height: calc(var(--header-height) * 2);
+    }
+    .tvp-lyric {
+      height: 100%;
+      position: static;
+      width: 50%;
+    }
+    .tvp-cover {
+      width: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: static;
+      .tvp-cover-container {
+        border: 0;
+        box-shadow: none;
+        padding: 0;
+        aspect-ratio: 1;
+
+        .cover_title {
+          display: none;
+        }
+      }
+    }
+    .tvp-exhibition {
+      display: flex;
+      width: 60vw;
+      min-width: 992px;
+      margin: 0 auto;
+    }
+  }
 }
 </style>

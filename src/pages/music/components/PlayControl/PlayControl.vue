@@ -58,6 +58,8 @@ const click = () => {
   bottom: 0;
   width: 100%;
   height: var(--play-height);
+  box-sizing: border-box;
+  padding: 12px;
   @media (min-width: 768px) {
     height: 200px;
   }

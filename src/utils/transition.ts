@@ -1,6 +1,7 @@
 
 
 type Callback = (t: number, f: number, option: Return) => void
+type CallbackArr = (t: number[], f: number[], option: Return) => void
 type Return = {
   /**
    * 动画开始 
@@ -16,10 +17,10 @@ export function transitionNumber(form: number, to: number, callback: Callback, t
 export function transitionNumber(form: number, to: number, callback: Callback,/*结束回调*/ over: Function): Return;
 export function transitionNumber(form: number, to: number, callback: Callback,/*结束回调*/ over: Function, time: number): Return;
 
-export function transitionNumber(form: number[], to: number[], callback: Callback,): Return;
-export function transitionNumber(form: number[], to: number[], callback: Callback, time: number): Return;
-export function transitionNumber(form: number[], to: number[], callback: Callback,/*结束回调*/ over: Function): Return;
-export function transitionNumber(form: number[], to: number[], callback: Callback,/*结束回调*/ over: Function, time: number): Return;
+export function transitionNumber(form: number[], to: number[], callback: CallbackArr,): Return;
+export function transitionNumber(form: number[], to: number[], callback: CallbackArr, time: number): Return;
+export function transitionNumber(form: number[], to: number[], callback: CallbackArr,/*结束回调*/ over: Function): Return;
+export function transitionNumber(form: number[], to: number[], callback: CallbackArr,/*结束回调*/ over: Function, time: number): Return;
 
 /**
  * 数字过渡动画
@@ -35,7 +36,7 @@ export function transitionNumber(form: number[], to: number[], callback: Callbac
 export function transitionNumber(
   form: number | number[],
   to: number | number[],
-  callback: Callback,
+  callback: Callback | CallbackArr,
   over: number | Function = 300,
   time: number = 300
 ) {
@@ -61,11 +62,11 @@ export function transitionNumber(
       return
     }
     if (typeof form === 'number' && typeof to === 'number') {
+      // @ts-ignore
       callback(form * (1 - progress) + to * progress, form, option)
     } else if (Array.isArray(form) && Array.isArray(to) && form.length === to.length) {
-      for (let index in form) {
-        callback(form[index] * (1 - progress) + to[index] * progress, form[index], option)
-      }
+      // @ts-ignore
+      callback(form.map((v, index) => v * (1 - progress) + to[index] * progress), form, option)
     } else throw new TypeError('只能是数字')
     requestAnimationFrame(step);
   }

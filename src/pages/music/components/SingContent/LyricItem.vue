@@ -100,7 +100,7 @@ onMounted(setData)
 .lyriclist {
   width: 100%;
   overflow-x: auto;
-  text-align: center;
+  // text-align: center;
   display: flex;
   justify-content: center;
   flex: 1 1 auto;
@@ -111,8 +111,8 @@ onMounted(setData)
   }
   &-container {
     min-width: 100%;
-    white-space: nowrap;
-    text-align: center;
+    // white-space: nowrap;
+    // text-align: center;
     align-items: flex-start;
     width: fit-content;
   }
@@ -121,17 +121,17 @@ onMounted(setData)
   position: relative;
   width: fit-content;
   &-content {
-    color: #ffffffaa;
+    color: var(--lyric-color);
     overflow: hidden;
   }
   .lyric-activ {
-    color: black;
+    color: var(--lyric-activ-color, #fff);
     text-align: left;
   }
   &-activ {
     position: absolute;
     left: 0;
-    color: black;
+    color: var(--lyric-activ-color, #fff);
     width: 0%;
     overflow: hidden;
     animation-name: lyricactiv;
@@ -146,7 +146,7 @@ onMounted(setData)
     animation: none;
     position: absolute;
     left: 0;
-    color: black;
+    color: var(--lyric-activ-color, #fff);
     width: 100%;
     overflow: hidden;
   }

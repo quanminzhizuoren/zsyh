@@ -52,9 +52,12 @@ onUnmounted(() => {
   width: 100%;
   height: 100%;
   background-image: linear-gradient(-20deg, #14e7fa, #8ed3e7, #14e7fa);
+  background: #212121;
   position: absolute;
   top: 0;
-
+  --bg-color: #212121;
+  --lyric-activ-color: #fff;
+  --lyric-color: #ffffff4a;
   &-header {
     width: 100%;
     height: var(--header-height, 48px);
@@ -89,9 +92,6 @@ onUnmounted(() => {
         width: 100%;
         aspect-ratio: 1;
         border-radius: 30px;
-        // @media screen and(min-width: 800px) {
-        //   border-radius: 0;
-        // }
       }
       .cover_title {
         margin-top: 3px;

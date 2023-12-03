@@ -1,6 +1,6 @@
 # zsyh
 
-# [https://zsyh.4everland.website](https://zsyh.4everland.website/music)
+# [https://zsyh.4everland.website](https://zsyh.4everland.website/#/music)
 
 ## Project Setup
 

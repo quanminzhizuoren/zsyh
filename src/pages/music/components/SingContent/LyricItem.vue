@@ -41,6 +41,12 @@ const props = defineProps<{
 const list = ref<LyricItemContent[]>([])
 /**当前词进度 */
 const activIndex = ref(-1)
+watch(
+  () => props.activ,
+  () => {
+    activIndex.value = -1
+  }
+)
 
 // 监听进度 设置当前所唱的词下标
 watch(
@@ -111,7 +117,7 @@ onMounted(setData)
   }
   &-container {
     min-width: 100%;
-    // white-space: nowrap;
+    white-space: nowrap;
     // text-align: center;
     align-items: flex-start;
     width: fit-content;

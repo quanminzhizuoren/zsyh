@@ -13,6 +13,16 @@ const audioRef = ref<HTMLAudioElement>()
 onMounted(() => {
   if (!audioRef.value) return
   const audio = audioRef.value
+
+  audio.addEventListener(
+    'loadeddata',
+    (e) => {
+      store.currentTime = audio.currentTime
+      store.duration = audio.duration
+    },
+    false
+  )
+
   audio.addEventListener('timeupdate', () => {
     const progress = (audio.currentTime / audio.duration) * 100
     store.progress = progress
@@ -30,7 +40,7 @@ onMounted(() => {
 
   audio.addEventListener('ended', () => {
     store.isPlay = false
-    audio.play()
+    // audio.play()
   })
 
   store.audio = audio

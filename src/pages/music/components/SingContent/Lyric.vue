@@ -236,9 +236,9 @@ const scroll = (e: any) => {
     height: auto;
     li {
       width: 100%;
-      min-height: 1em;
-      line-height: 2em;
-      box-sizing: border-box;
+      height: 3em;
+      line-height: 3em;
+      // box-sizing: border-box;
       padding: 0 10px;
       overflow-x: auto;
       transition: font-size 200ms;
@@ -246,12 +246,12 @@ const scroll = (e: any) => {
       padding: 10px 0;
     }
     .lyric-itemactiv {
-      font-size: 1.7em;
+      font-size: 1.5em;
       opacity: 1;
     }
     .lyric-itembg {
       opacity: 1;
-      font-size: 1.7em;
+      font-size: 1.5em;
     }
   }
 }

@@ -7,10 +7,6 @@
       <div class="tvp-cover">
         <div class="tvp-cover-container">
           <img :src="store.coverUri" alt="" />
-          <div class="cover_title">
-            <div>HAVE A GOOD DAY !</div>
-            <span>@{{ new Date().getFullYear() }} KUGOU DESIGN</span>
-          </div>
         </div>
       </div>
       <!-- 歌词滚动区域 -->
@@ -68,25 +64,24 @@ onUnmounted(() => {
     position: relative;
   }
   &-cover {
+    height: 70%;
     width: 100%;
-    height: calc(100% - 70px);
-    min-height: 300px;
     box-sizing: border-box;
     display: flex;
     justify-content: center;
     align-items: center;
     position: absolute;
     top: 0;
-    &-container {
-      width: min(60vw, 400px);
-      aspect-ratio: 6 / 6.7;
-      background-color: #fff;
-      margin: 0 auto;
-      border-radius: 30px;
-      box-sizing: border-box;
-      box-shadow: 0 0 0 10px #fff, inset 0 0 10px #00000033;
-      padding: 10px;
 
+    &-container {
+      max-width: 350px;
+      height: 100%;
+      aspect-ratio: 1;
+      margin: 0 auto;
+      box-sizing: border-box;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       img {
         display: block;
         width: 100%;
@@ -109,9 +104,10 @@ onUnmounted(() => {
   }
   &-lyric {
     width: 100%;
-    height: calc(60vh - var(--header-height, 48px));
-    height: calc(100vh - var(--play-height) - var(--header-height, 48px));
+
     height: 100px;
+    height: 8em;
+    height: 30%;
     position: absolute;
     bottom: 0px;
     box-sizing: border-box;

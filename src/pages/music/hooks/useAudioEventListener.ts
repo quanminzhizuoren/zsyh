@@ -28,6 +28,7 @@ export const useAudioEventListener = (el: Ref<HTMLAudioElement | undefined>, sto
   const waiting = () => {
     if (store.loadprogress === 1) return
     store.loading = true
+    console.log('[ store.loading ]-31', store.loading)
     t = setTimeout(() => {
       store.loading = true
     }, 100)
@@ -73,7 +74,6 @@ export const useAudioEventListener = (el: Ref<HTMLAudioElement | undefined>, sto
     addEventListener() {
       if (!el.value) return
       const audio = el.value
-      console.log('[ audio ]-68', audio)
       // 音频加载至当前播放进度继续播放时
       audio.addEventListener('canplay', canplay)
       // 因网络问题，加载音频时，音频会先播放几秒，然后暂停，音频加载完成后再继续播放，

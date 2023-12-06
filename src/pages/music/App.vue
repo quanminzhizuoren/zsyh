@@ -13,9 +13,11 @@ import PlayControl from './components/PlayControl/PlayControl.vue'
 import SingContent from './components/SingContent/SingContent.vue'
 const store = useAudioStore()
 // 歌曲链接
-store.url = '/mp3/Do You Believe.mp3'
+// store.url = '/mp3/Do You Believe.mp3'
+store.url = 'https://assets.4everland.store/Do%20You%20Believe.mp3'
+
 // 获取歌词
-fetch('/json/krc.json')
+fetch('https://assets.4everland.store/json/Do%20You%20Believe.json')
   .then((res) => res.json())
   .then((res) => {
     store.krc = res

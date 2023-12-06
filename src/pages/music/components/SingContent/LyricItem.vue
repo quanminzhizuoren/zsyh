@@ -60,7 +60,10 @@ watch(
     }
     const newProgress = progress - dataStart
     // 已完成的歌词
-    const item = list.value.filter((v) => v.start / 1000 < newProgress)
+    const item = list.value.filter((v) => {
+      const num = v.start / 1000
+      return num - num * 0.1 < newProgress
+    })
     // 最新词位置
     activIndex.value = item.length - 1
   }
@@ -97,7 +100,17 @@ watch(
 /**获取歌词信息 */
 const setData = () => {
   if (!props.data.content.length) return
-  list.value = props.data.content
+  const data = props.data.content || []
+  list.value = data.map((v, index, list) => {
+    if (v.content === ' ' && list[index - 1]?.content !== ' ') {
+      return { ...v, start: v.start + v.duration, duration: 0 }
+    }
+    const data = list[index + 1]
+    if (data && data.content === ' ') {
+      return { ...v, duration: v.duration + data.duration }
+    }
+    return v
+  })
 }
 watch(() => props.data, setData)
 onMounted(setData)
@@ -142,7 +155,7 @@ onMounted(setData)
     overflow: hidden;
     animation-name: lyricactiv;
     animation-fill-mode: forwards;
-    animation-timing-function: cubic-bezier(0.21, 0.58, 0.66, 0.97);
+    animation-timing-function: ease-out;
     text-align: left;
   }
   .lyricitem-activ[data-animation='false'] {

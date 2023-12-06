@@ -7,8 +7,16 @@
     @touchmove="onwheel"
     @touchend="setScolling(false)"
     @scroll="scroll"
+    :style="[
+      props.unfold ? {} : { padding: '0 2em' }
+      // props.unfold
+      // ? {}
+      // : store.widescreen
+      // ? { '--lyric-algin': 'left' }
+      // : { '--lyric-algin': 'center' }
+    ]"
   >
-    <ul class="lyric-list" :style="{ textAlign: props.unfold ? lyricalign : 'center' }">
+    <ul class="lyric-list">
       <div :style="{ height: bodyh + 'px' }">
         <!-- <h1>{{ store.krc?.ar }}</h1> -->
       </div>
@@ -29,11 +37,6 @@
       </li>
       <div :style="{ height: bodyh + 'px' }"></div>
     </ul>
-  </div>
-  <div class="lyric-align" @click.stop="cahngeAlgin" v-if="props.unfold">
-    <iconLeft v-if="lyricalign === 'left'" />
-    <iconCenter v-if="lyricalign === 'center'" />
-    <iconRight v-if="lyricalign === 'right'" />
   </div>
   <div class="skip" v-if="unfold" v-show="activIndex !== -1" @click.stop="toPlay()">
     <svg
@@ -57,9 +60,6 @@
 </template>
 
 <script setup lang="ts">
-import iconCenter from '@/components/icons/center.vue'
-import iconLeft from '@/components/icons/left.vue'
-import iconRight from '@/components/icons/right.vue'
 import { useAudioStore } from '@/stores/audio'
 import type { LyricContent } from '@/types/Krc'
 import { transitionNumber } from '@/utils/transition'
@@ -75,17 +75,18 @@ const list = ref<LyricContent[]>([])
 
 /**当前播放歌词下标 */
 const itemIndex = ref(-1)
-const alLi: ('center' | 'left' | 'right')[] = ['center', 'left', 'right']
-const lyricalign = ref<'center' | 'left' | 'right'>('center')
-const cahngeAlgin = () => {
-  const index = alLi.findIndex((v) => lyricalign.value === v)
-  lyricalign.value = alLi[Math.abs(index) < alLi.length - 1 ? index + 1 : 0]
-}
 
 // 设置滚动歌词距离
 const onscroll = () => {
   const item = LyricItemRef.value
   if (!item.length) return
+  if (store.currentTime === 0) {
+    itemIndex.value = 0
+    if (LyricListRef.value) {
+      LyricListRef.value.scrollTop = 0
+    }
+    return
+  }
   const progressTime = store.currentTime * 1000
   const endList = list.value.filter((v, index, li) => {
     if (index + 1 < li.length) {
@@ -96,8 +97,21 @@ const onscroll = () => {
     }
     return v.start < progressTime + (index + 1 < li.length ? 220 : 0)
   })
-  if (itemIndex.value === endList.length - 1) return
-  itemIndex.value = endList.length - 1
+  const activindex = endList.length - 1
+  if (itemIndex.value === activindex) return
+  if (Math.abs(activindex - itemIndex.value) > 3) {
+    itemIndex.value = activindex
+    const itemEl = LyricItemRef.value[itemIndex.value]
+    if (LyricListRef.value && itemEl) {
+      const h = LyricListRef.value?.clientHeight / 2 - itemEl.clientHeight / 2
+      const st = LyricListRef.value.scrollTop
+      LyricListRef.value.scrollTop = itemEl.offsetTop - (props.unfold ? h : itemEl.clientHeight / 2)
+    }
+
+    return
+  }
+  itemIndex.value = activindex
+
   if (isScolling) return
   ontransition()
 }
@@ -147,7 +161,7 @@ let isScolling = false
 
 let t: number
 // 滚轮事件
-const onwheel = (e: TouchEvent | WheelEvent) => {
+const onwheel = () => {
   setScolling(true)
   clearTimeout(t)
   t = setTimeout(() => {
@@ -193,6 +207,7 @@ const progress = ref(0)
 
 // 点击跳转进度
 const toPlay = () => {
+  activIndex.value = -1
   if (LyricListRef.value) {
     if (store.audio) {
       store.audio.currentTime = progress.value
@@ -222,7 +237,8 @@ const scroll = (e: any) => {
   overflow-y: auto;
   position: relative;
   scrollbar-width: none;
-
+  text-align: var(--lyric-algin);
+  box-sizing: border-box;
   &::-webkit-scrollbar {
     display: none;
   }
@@ -272,27 +288,6 @@ const scroll = (e: any) => {
     width: 1em;
     height: 1em;
     margin-right: 0.3em;
-  }
-}
-.lyric-align {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  border-radius: 0.3em;
-  background-color: var(--bg-color);
-  color: var(--lyric-color);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  padding: 0.3em;
-  .icon {
-    fill: var(--lyric-color);
-    width: 0.7em;
-    height: 0.7em;
-  }
-  .icon + .icon {
-    margin-left: 0.3em;
   }
 }
 </style>

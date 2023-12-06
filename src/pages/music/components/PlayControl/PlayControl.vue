@@ -1,8 +1,14 @@
 <template>
   <div class="play">
     <h1 style="text-align: center">{{ store.name }}</h1>
-
-    <div></div>
+    <!-- 歌词对齐方式按钮 -->
+    <div class="lyric-align">
+      <div @click.stop="cahngeAlgin">
+        <iconLeft v-if="store.style['--lyric-algin'] === 'left'" />
+        <iconCenter v-if="store.style['--lyric-algin'] === 'center'" />
+        <iconRight v-if="store.style['--lyric-algin'] === 'right'" />
+      </div>
+    </div>
     <div class="play-control">
       <!-- 进度条 -->
       <div class="sing-progress-bar">
@@ -16,26 +22,17 @@
         <div></div>
         <div></div>
         <div class="audioplay" @click="click">
-          <svg
-            t="1700996669223"
-            class="icon"
-            viewBox="0 0 1024 1024"
-            version="1.1"
-            xmlns="http://www.w3.org/2000/svg"
-            p-id="11918"
-            width="200"
-            height="200"
-            v-if="pause"
-          >
-            <path
-              d="M861.829969 330.562413L391.150271 33.456576A214.465233 214.465233 0 0 0 62.30358 214.751187V809.248813a214.465233 214.465233 0 0 0 328.846691 181.294611l470.679698-297.105837a214.751187 214.751187 0 0 0 0-362.875174z"
-              p-id="11919"
-            ></path>
-          </svg>
-          <div v-else class="pauseicon">
-            <span></span>
-            <span></span>
-          </div>
+          <!-- 等待加载 -->
+          <div class="loader" v-if="store.loading"></div>
+          <template v-else>
+            <!-- 暂停 -->
+            <iconPlay v-if="!store.isPlay" />
+            <!-- 播放 -->
+            <div v-else class="pauseicon">
+              <span></span>
+              <span></span>
+            </div>
+          </template>
         </div>
         <div></div>
         <div></div>
@@ -45,8 +42,12 @@
 </template>
 
 <script setup lang="ts">
+import iconCenter from '@/components/icons/center.vue'
+import iconLeft from '@/components/icons/left.vue'
+import iconPlay from '@/components/icons/play.vue'
+import iconRight from '@/components/icons/right.vue'
 import { useAudioStore } from '@/stores/audio'
-import { computed, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import ProgressBar from './ProgressBar.vue'
 const emit = defineEmits<{
   (e: 'change', value: number): void
@@ -56,15 +57,18 @@ const props = defineProps<{
 }>()
 const store = useAudioStore()
 
+/**当前进度 */
 const progress = ref(0)
 
+// 设置进度
 watch(
   () => store.currentTime,
   (value) => {
     progress.value = value
   }
 )
-progress.value
+
+// 滑块进度条改变
 const input = (value: number) => {
   if (store.audio) {
     if (value >= store.duration) {
@@ -75,14 +79,25 @@ const input = (value: number) => {
     }
   }
 }
-const pause = computed(() => store.isPause)
+
+// 播放暂停按钮
 const click = () => {
   store.audio?.paused ? store.audio?.play() : store.audio?.pause()
+}
+
+// 改变歌词对齐方式
+const alLi: ('center' | 'left' | 'right')[] = ['center', 'left', 'right']
+const cahngeAlgin = () => {
+  const index = alLi.findIndex((v) => store.style['--lyric-algin'] === v)
+  store.style['--lyric-algin'] = alLi[Math.abs(index) < alLi.length - 1 ? index + 1 : 0]
 }
 </script>
 
 <style lang="less" scoped>
 .play {
+  h1 {
+    font-style: italic;
+  }
   position: absolute;
   bottom: 0;
   left: 50%;
@@ -125,6 +140,7 @@ const click = () => {
       height: 1.5em;
       fill: #00000096;
     }
+    /* 播放暂停按钮 */
     .audioplay {
       border-radius: 100px;
       aspect-ratio: 1;
@@ -136,7 +152,6 @@ const click = () => {
       align-items: center;
       .icon {
         box-sizing: border-box;
-        padding-left: 3px;
       }
       .pauseicon {
         width: 100%;
@@ -174,6 +189,44 @@ const click = () => {
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+}
+.lyric-align {
+  height: 30px;
+  border-radius: 0.3em;
+  color: var(--lyric-color);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  .icon {
+    fill: var(--lyric-color);
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+  }
+  .icon + .icon {
+    margin-left: 0.3em;
+  }
+}
+
+/* 动画-正在加载 */
+.loader {
+  width: 1.5em;
+  box-sizing: border-box;
+  padding: 8px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #00000096;
+  --_m: conic-gradient(#0000 10%, #000), linear-gradient(#000 0 0) content-box;
+  -webkit-mask: var(--_m);
+  mask: var(--_m);
+  -webkit-mask-composite: source-out;
+  mask-composite: subtract;
+  animation: l3 1s infinite linear;
+}
+@keyframes l3 {
+  to {
+    transform: rotate(1turn);
   }
 }
 </style>

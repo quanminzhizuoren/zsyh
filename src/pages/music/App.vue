@@ -1,5 +1,5 @@
 <template>
-  <div class="player_container">
+  <div class="player_container" :style="store.style">
     <SingContent />
     <PlayControl />
     <Kaudio />
@@ -30,6 +30,9 @@ fetch('/json/krc.json')
   --header-height: 48px;
   --lyric-height: 100px;
   --play-height: min(40vh, 300px);
+  --bg-color: #212121;
+  --lyric-activ-color: #fff;
+  --lyric-color: #ffffff4a;
   position: relative;
 }
 .paly {

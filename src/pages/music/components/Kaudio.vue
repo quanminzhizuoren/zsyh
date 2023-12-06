@@ -1,54 +1,23 @@
 <template>
-  <audio ref="audioRef" :src="store.url" controls preload="auto"></audio>
+  <audio ref="audioRef" :src="store.url" preload="auto" autoplay></audio>
 </template>
 
 <script setup lang="ts">
 import { useAudioStore } from '@/stores/audio'
-import { onMounted, ref } from 'vue'
-
+import { onMounted, onUnmounted, ref } from 'vue'
+import { useAudioEventListener } from '../hooks/useAudioEventListener'
 const store = useAudioStore()
 
 const audioRef = ref<HTMLAudioElement>()
 
+const audioEvent = useAudioEventListener(audioRef, store)
 onMounted(() => {
   if (!audioRef.value) return
   const audio = audioRef.value
-
-  audio.addEventListener(
-    'loadeddata',
-    (e) => {
-      store.currentTime = audio.currentTime
-      store.duration = audio.duration
-    },
-    false
-  )
-
-  audio.addEventListener('timeupdate', () => {
-    const progress = (audio.currentTime / audio.duration) * 100
-    store.progress = progress
-    store.currentTime = audio.currentTime
-    store.duration = audio.duration
-  })
-
-  audio.addEventListener('play', () => {
-    store.isPause = false
-    store.isPlay = true
-  })
-  audio.addEventListener('pause', () => {
-    store.isPause = true
-  })
-
-  audio.addEventListener('ended', () => {
-    store.isPlay = false
-    // audio.play()
-  })
-
+  audioEvent.addEventListener()
   store.audio = audio
 })
+onUnmounted(() => {
+  audioEvent.removeEventListener()
+})
 </script>
-
-<style>
-audio {
-  display: none;
-}
-</style>

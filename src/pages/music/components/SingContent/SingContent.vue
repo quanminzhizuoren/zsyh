@@ -1,5 +1,5 @@
 <template>
-  <div class="tvp" :class="{ 'lyric-unfold': isLyricStyle }">
+  <div class="tvp" :class="{ 'lyric-unfold': isLyric }">
     <!-- 头部 -->
     <div class="tvp-header"></div>
     <div class="tvp-exhibition">
@@ -11,7 +11,10 @@
       </div>
       <!-- 歌词滚动区域 -->
       <div class="tvp-lyric" @click.stop="lyricClick" @scroll="scroll">
-        <Lyric :unfold="isLyricStyle" :style="[isLyricStyle ? {} : { pointerEvents: 'none' }]" />
+        <Lyric
+          :unfold="isLyric"
+          :style="[isLyric || store.widescreen ? {} : { pointerEvents: 'none' }]"
+        />
       </div>
     </div>
   </div>
@@ -23,16 +26,16 @@ import { onMounted, onUnmounted, ref } from 'vue'
 import Lyric from './Lyric.vue'
 const store = useAudioStore()
 
-const isLyricStyle = ref(false)
+const isLyric = ref(false)
 const lyricClick = () => {
-  isLyricStyle.value = !isLyricStyle.value
+  isLyric.value = !isLyric.value
 }
 const scroll = () => {
   console.log(store.audio?.currentTime)
 }
 
 const setShw = () => {
-  isLyricStyle.value = document.body.clientWidth > 992
+  store.widescreen = document.body.clientWidth > 992
 }
 onMounted(() => {
   window.addEventListener('resize', setShw)
@@ -51,9 +54,7 @@ onUnmounted(() => {
   background: #212121;
   position: absolute;
   top: 0;
-  --bg-color: #212121;
-  --lyric-activ-color: #fff;
-  --lyric-color: #ffffff4a;
+
   &-header {
     width: 100%;
     height: var(--header-height, 48px);
@@ -146,6 +147,15 @@ onUnmounted(() => {
 }
 
 @media (min-width: 992px) {
+  .tvp.lyric-unfold {
+    .tvp-lyric {
+      position: static;
+      width: 40%;
+      min-width: 300px;
+      font-size: 20px;
+      height: 100%;
+    }
+  }
   .tvp {
     .lyric-blur();
     .tvp-header {
@@ -153,12 +163,16 @@ onUnmounted(() => {
     }
     .tvp-lyric {
       position: static;
-      width: 40%;
+      width: 50%;
       min-width: 300px;
+      font-size: 20px;
+      height: 100%;
+      box-sizing: border-box;
+      padding: 3em 0;
       height: 70%;
-      min-height: 400px;
-      max-height: 600px;
+      height: 300px;
     }
+
     .tvp-cover {
       width: 50%;
       display: flex;

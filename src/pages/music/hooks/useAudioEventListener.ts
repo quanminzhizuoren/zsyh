@@ -55,8 +55,7 @@ export const useAudioEventListener = (el: Ref<HTMLAudioElement | undefined>, sto
   const play = () => {
     store.isPause = false
     store.isPlay = true
-    store.login = false
-
+    store.loading = false
   }
   const pause = () => {
     store.isPlay = false

@@ -162,7 +162,7 @@ watch(
 const change = (value: number) => {
   isItemText.value = true
   previewProgress.value = (value / 60).toFixed(2).replace('.', ':')
-  const length = listLyric.filter((v) => v.start + v.start * 0.3 <= value * 1000).length
+  const length = listLyric.filter((v) => v.start <= value * 1000).length
   if (!listLyric[length - 1]) return
   const { content } = listLyric[length - 1]
   itemText.value = content

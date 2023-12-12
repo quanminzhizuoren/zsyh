@@ -1,6 +1,9 @@
 <template>
   <div class="play">
-    <h1 style="text-align: center">{{ store.name }}</h1>
+    <!-- 歌名 -->
+    <h1>{{ store.krc?.ti }}</h1>
+    <!-- 作者 -->
+    <p>{{ store.krc?.ar }}</p>
     <!-- 歌词对齐方式按钮 -->
     <div class="lyric-align">
       <div @click.stop="cahngeAlgin">
@@ -13,7 +16,13 @@
       <!-- 进度条 -->
       <div class="sing-progress-bar">
         <div class="sing-progress-bar-time">{{ (progress / 60).toFixed(2).replace('.', ':') }}</div>
-        <ProgressBar :max="store.duration" v-model="progress" @input="input" />
+        <ProgressBar
+          ref="ProgressBarRef"
+          :max="store.duration"
+          v-model="progress"
+          @input="input"
+          @change="change"
+        />
         <div class="sing-progress-bar-time">
           {{ (store.duration / 60).toFixed(2).replace('.', ':') }}
         </div>
@@ -39,6 +48,24 @@
       </div>
     </div>
   </div>
+  <Teleport to="body">
+    <div
+      class="progress-lyric"
+      :style="{
+        left: lyricLoca.x + 'px',
+        top: lyricLoca.y + 'px',
+        width: lyricLoca.w + 'px'
+      }"
+      v-if="isItemText"
+    >
+      <span class="progress-lyric-time">{{ previewProgress }}</span>
+      <div class="progress-lyric-container">
+        <div class="progress-lyric-text">
+          <div class="progress-lyric-content">{{ itemText }}</div>
+        </div>
+      </div>
+    </div>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -47,14 +74,12 @@ import iconLeft from '@/components/icons/left.vue'
 import iconPlay from '@/components/icons/play.vue'
 import iconRight from '@/components/icons/right.vue'
 import { useAudioStore } from '@/stores/audio'
-import { ref, watch } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 import ProgressBar from './ProgressBar.vue'
 const emit = defineEmits<{
   (e: 'change', value: number): void
 }>()
-const props = defineProps<{
-  title?: string
-}>()
+
 const store = useAudioStore()
 
 /**当前进度 */
@@ -78,6 +103,7 @@ const input = (value: number) => {
       store.audio.currentTime = value
     }
   }
+  isItemText.value = false
 }
 
 // 播放暂停按钮
@@ -86,17 +112,108 @@ const click = () => {
 }
 
 // 改变歌词对齐方式
-const alLi: ('center' | 'left' | 'right')[] = ['center', 'left', 'right']
+const alLi: ('center' | 'left' | 'right')[] = ['left', 'center', 'right']
 const cahngeAlgin = () => {
   const index = alLi.findIndex((v) => store.style['--lyric-algin'] === v)
   store.style['--lyric-algin'] = alLi[Math.abs(index) < alLi.length - 1 ? index + 1 : 0]
 }
+
+const ProgressBarRef = ref<InstanceType<typeof ProgressBar>>()
+
+// 预览歌词位置
+const lyricLoca = ref({ x: 0, y: 0, w: 0 })
+// 设置预览歌词位置
+const setlyricLoca = () => {
+  const el = ProgressBarRef.value?.el
+  if (el) {
+    const { width, left, top } = el.getBoundingClientRect()
+    lyricLoca.value = { x: left, y: top, w: width }
+  }
+}
+onMounted(() => {
+  setlyricLoca()
+  window.addEventListener('resize', setlyricLoca)
+})
+onUnmounted(() => {
+  window.removeEventListener('resize', setlyricLoca)
+})
+
+// 调整进度时预览进度歌词
+const itemText = ref('')
+const isItemText = ref(false)
+watch(() => isItemText.value, setlyricLoca)
+const previewProgress = ref('')
+let listLyric: {
+  content: string
+  start: number
+}[] = []
+watch(
+  () => store.krc,
+  () => {
+    listLyric = (store.krc?.content || []).map((v) => ({
+      content: v.content.map((c) => c.content).join(''),
+      start: v.start
+    }))
+  },
+  {
+    immediate: true
+  }
+)
+const change = (value: number) => {
+  isItemText.value = true
+  previewProgress.value = (value / 60).toFixed(2).replace('.', ':')
+  const length = listLyric.filter((v) => v.start + v.start * 0.3 <= value * 1000).length
+  if (!listLyric[length - 1]) return
+  const { content } = listLyric[length - 1]
+  itemText.value = content
+}
 </script>
 
 <style lang="less" scoped>
+.progress-lyric {
+  max-width: 100vw;
+  height: 40px;
+  position: fixed;
+  transform: translateY(calc(-100%));
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  &-container {
+    width: fit-content;
+    border-radius: 1em;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: 0 10px;
+  }
+  &-text {
+    display: inline-block;
+    max-width: 100%;
+    width: fit-content;
+    overflow: hidden;
+    color: #ffffff5b;
+    flex-wrap: nowrap;
+  }
+  &-time {
+    position: absolute;
+    left: 0;
+    background-color: #ffffff5b;
+    color: #000;
+    padding: 0 5px;
+    border-radius: 1em;
+    font-size: 0.7em;
+  }
+  &-content {
+    white-space: nowrap;
+  }
+}
 .play {
   h1 {
-    font-style: italic;
+    margin: 0;
+    padding: 0;
   }
   position: absolute;
   bottom: 0;

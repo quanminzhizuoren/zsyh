@@ -26,7 +26,7 @@ const router = createRouter({
 })
 
 /**网页默认标题 */
-const documentTitle = 'ZSTH'
+const documentTitle = 'ZSYH'
 router.beforeEach((to, from, next) => {
   // 设置页面标题
   document.title = !to.meta?.title ? documentTitle : [to.meta?.title, documentTitle].join('-')

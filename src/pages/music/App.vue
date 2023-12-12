@@ -8,6 +8,7 @@
 
 <script setup lang="ts">
 import { useAudioStore } from '../../stores/audio'
+import type { Lyric } from '../../types/Krc'
 import Kaudio from './components/Kaudio.vue'
 import PlayControl from './components/PlayControl/PlayControl.vue'
 import SingContent from './components/SingContent/SingContent.vue'
@@ -18,10 +19,10 @@ store.url = 'https://assets.4everland.store/Do%20You%20Believe.mp3'
 
 // 获取歌词
 fetch('https://assets.4everland.store/json/Do%20You%20Believe.json')
-  .then((res) => res.json())
+  .then<Lyric>((res) => res.json())
   .then((res) => {
     store.krc = res
-    store.name = res.ar
+    store.name = res.ti
   })
 </script>
 

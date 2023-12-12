@@ -37,7 +37,7 @@ export const useAudioStore = defineStore('audio', () => {
   /**样式变量 */
   const style = ref({
     /**歌词对齐方式 */
-    '--lyric-algin': 'center',
+    '--lyric-algin': 'left',
   })
 
   /**是否宽屏幕 */

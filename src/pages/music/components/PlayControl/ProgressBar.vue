@@ -57,6 +57,7 @@ watch(
 const input = () => {
   const val = Number(rangeRef.value?.value) || 0
   progressWidth.value = val
+  emit('change', val)
   isInput = false
 }
 const change = () => {
@@ -88,6 +89,10 @@ onMounted(() => {
 })
 onUnmounted(() => {
   progressRef.value && resizeObserver.unobserve(progressRef.value)
+})
+
+defineExpose({
+  el: progressRef
 })
 </script>
 <style lang="less" scoped>

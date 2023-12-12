@@ -8,7 +8,8 @@
     @touchend="setScolling(false)"
     @scroll="scroll"
     :style="[
-      props.unfold ? {} : { padding: '0 2em' }
+      props.unfold ? {} : { padding: '0 2em' },
+      { scrollBehavior: scrollBehavior ? 'smooth' : 'auto' }
       // props.unfold
       // ? {}
       // : store.widescreen
@@ -62,7 +63,6 @@
 <script setup lang="ts">
 import { useAudioStore } from '@/stores/audio'
 import type { LyricContent } from '@/types/Krc'
-import { transitionNumber } from '@/utils/transition'
 import { nextTick, onMounted, ref, watch } from 'vue'
 import LyricItem from './LyricItem.vue'
 const props = defineProps<{ unfold: boolean }>()
@@ -75,6 +75,9 @@ const list = ref<LyricContent[]>([])
 
 /**当前播放歌词下标 */
 const itemIndex = ref(-1)
+
+// 开启滚动动画
+const scrollBehavior = ref(true)
 
 // 设置滚动歌词距离
 const onscroll = () => {
@@ -95,17 +98,22 @@ const onscroll = () => {
       // 开始下一句前滚动到下一句歌词
       return v.start - num * 0.1 < progressTime
     }
-    return v.start < progressTime + (index + 1 < li.length ? 220 : 0)
+    return v.start < progressTime + (index + 1 < li.length ? 220 : 0) //增加当前进度值使歌词提前滚动到下一句
   })
   const activindex = endList.length - 1
   if (itemIndex.value === activindex) return
+  // 歌词跳转大于3句时关闭滚动动画直接跳转
   if (Math.abs(activindex - itemIndex.value) > 3) {
     itemIndex.value = activindex
     const itemEl = LyricItemRef.value[itemIndex.value]
     if (LyricListRef.value && itemEl) {
       const h = LyricListRef.value?.clientHeight / 2 - itemEl.clientHeight / 2
-      const st = LyricListRef.value.scrollTop
+      // const st = LyricListRef.value.scrollTop
+      scrollBehavior.value = false
       LyricListRef.value.scrollTop = itemEl.offsetTop - (props.unfold ? h : itemEl.clientHeight / 2)
+      nextTick(() => {
+        scrollBehavior.value = true
+      })
     }
 
     return
@@ -116,26 +124,24 @@ const onscroll = () => {
   ontransition()
 }
 
-const ontransition = () => {
+/**滚动到当前播放进度歌词位置 */
+const ontransition = (animation: boolean = true) => {
   activIndex.value = -1
+  scrollBehavior.value = animation
   const itemEl = LyricItemRef.value[itemIndex.value]
-  if (LyricListRef.value && itemEl) {
-    const h = LyricListRef.value?.clientHeight / 2 - itemEl.clientHeight / 2
-    const st = LyricListRef.value.scrollTop
-    transitionNumber(
-      st,
-      itemEl.offsetTop - (props.unfold ? h : itemEl.clientHeight / 2),
-      (to, _, { stop }) => {
-        isScolling && stop()
-        if (LyricListRef.value) {
-          LyricListRef.value.scrollTop = to
-        }
-      }
-    ).start()
-  }
+  nextTick(() => {
+    if (LyricListRef.value && itemEl) {
+      const h = props.unfold ? LyricListRef.value?.clientHeight / 2 - itemEl.clientHeight / 2 : 0
+      LyricListRef.value.scrollTop = itemEl.offsetTop - h
+    }
+    scrollBehavior.value = true
+  })
 }
 
-watch(() => props.unfold, onscroll)
+watch(
+  () => props.unfold,
+  () => ontransition(false)
+)
 
 //监听播放 滚动歌词
 watch(
@@ -148,6 +154,7 @@ watch(
 
 const currentTime = ref(0)
 
+/**获取歌词json */
 const changeKrc = () => {
   if (!store.krc) return
   list.value = store.krc.content || []
@@ -188,15 +195,8 @@ onMounted(() => {
     const resizeObserver = new ResizeObserver((entries) => {
       bodyh.value = entries[0].contentRect.height / 2
       nextTick(() => {
-        const itemEl = LyricItemRef.value[itemIndex.value]
-        if (LyricListRef.value && itemEl) {
-          const h = props.unfold
-            ? LyricListRef.value?.clientHeight / 2 - itemEl.clientHeight / 2
-            : 0
-          LyricListRef.value.scrollTop = itemEl.offsetTop - h
-
-          activIndex.value = -1
-        }
+        ontransition(false)
+        activIndex.value = -1
       })
     })
     LyricListRef.value && resizeObserver.observe(LyricListRef.value)

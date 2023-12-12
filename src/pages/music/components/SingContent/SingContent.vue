@@ -10,7 +10,7 @@
         </div>
       </div>
       <!-- 歌词滚动区域 -->
-      <div class="tvp-lyric" @click.stop="lyricClick" @scroll="scroll">
+      <div class="tvp-lyric" @click.stop="lyricClick">
         <Lyric
           :unfold="isLyric"
           :style="[isLyric || store.widescreen ? {} : { pointerEvents: 'none' }]"
@@ -30,10 +30,6 @@ const isLyric = ref(false)
 const lyricClick = () => {
   isLyric.value = !isLyric.value
 }
-const scroll = () => {
-  console.log(store.audio?.currentTime)
-}
-
 const setShw = () => {
   store.widescreen = document.body.clientWidth > 992
 }
